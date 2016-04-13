@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>I'm Learning D3</title>
+	<!-- Load the D3 library here -->
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+</head>
+<body>
+	<!-- Page elements and content go here. -->
+
+	<script>
+		// Our D3 code will go here.
+		// New dataset read from CSV
+		var healthData = [];
+
+		d3.csv("data/health_care_2014_MA.csv", function(d) {
+			return {
+				county : d.name.replace(', Massachusetts',''), // city name
+				no_hc : +d.perc_no_hc, // force value of rats to be number (+)
+				with_hc : +d.perc_hc
+			};
+		}, 
+
+		function(error, rows) { // catch error if error, read rows
+			data = rows; // set ratData equal to rows
+			createVisualization(); // call function to create chart
+		});
+
+		function createVisualization(){
+			// Width and height of SVG
+			var margin = {bottom: 75, left: 15, right: 85};
+			var w = 500 - margin.left - margin.right;
+			var h = 375 - margin.bottom;
+
+			// Get length of dataset
+			var arrayLength = data.length; // length of dataset
+			var x_axisLength = 300; // length of x-axis in our layout
+			var y_axisLength = 300; // length of y-axis in our layout
+
+			//Create SVG element
+			var svg = d3.select("body")
+				.append("svg")
+				.attr("width", w + margin.left + margin.right)
+				.attr("height", h + margin.bottom + 100)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + ",10)");
+
+			// Transpose the data into layers
+			var dataset = d3.layout.stack()(["no_hc", "with_hc"].map(function(healthData) {
+				return data.map(function(d) {
+					return {
+						x: d.county, 
+						y: +d[healthData]
+					};
+				});
+			}));
+
+			var yScale = d3.scale.linear()
+				.domain([0, d3.max(dataset, function(d) {
+					return d3.max(d, function(d) {
+						return d.y0 + d.y;
+					}); 
+				})])
+				.range([h, 0]);
+
+			var colors = ["#FF6357", "#63BDFF"];
+
+			// Create groups for each series, rect elements for each segment 
+			var groups = svg.selectAll("g.county")
+				.data(dataset)
+				.enter().append("g")
+				.attr("class", "county")
+				.style("fill", function(d, i) { return colors[i]; });
+
+			// Select and generate rectangle elements
+			var rect0 = groups.selectAll( "rect" )
+				.data( function(d) { return d; } )
+				.enter()
+				.append("rect")
+				.attr( "x", function(d,i){
+					return i * (x_axisLength/arrayLength) + 30; // Set x coord of rect using length of array
+				})
+				.attr( "y", function(d){
+					return yScale(d.y0 + d.y) + 50; // Set y coordinate of rect using the y scale
+				})
+				.attr( "width", (x_axisLength/arrayLength) - 1) // Set bar width using length of array, leave gap of 1px between rect
+				.attr( "height", function(d){
+					return yScale(d.y0) - yScale(d.y0 + d.y); // Set height of using the scale
+				})
+				.on("mouseover", function() {
+					tooltip.style("display", null);
+				})
+				.on("mousemove", function(d) {
+					var xPosition = d3.mouse(this)[0] - 15;
+					var yPosition = d3.mouse(this)[1] - 25;
+					tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+					tooltip.select("text").text( d.x + ": " + (d.y * 100).toFixed(2) + "%");
+				})
+				.on("mouseout", function() {
+					tooltip.style("display", "none");
+				});
+
+			svg.selectAll("labels")
+				.data(data)
+				.enter()
+				.append('text')
+				.attr("class", "countylabels")
+				.attr("text-anchor", "end")
+				.text(function (d, i) { return data[i].county;})
+
+				.attr("transform", function(d, i) {
+				 return "translate(" + (i * 21.5 + 43 ) + ", " + (h + 55 ) + ") rotate(270)"; })
+				.attr("font-size", "12px")
+				.attr("fill", "grey")
+				.attr("font-family", "Arial");
+
+			// Draw legend
+			var legend = svg.selectAll(".legend")
+				.data(colors)
+				.enter()
+				.append("g")
+				.attr("class", "legend")
+				.attr("transform", function(d, i) { return "translate( 10 , " + (i * 20 + 50 ) + ")"; })
+
+			legend.append("rect")
+				.attr("x", w - 70)
+				.attr("width", 18)
+				.attr("height", 18)
+				.style("fill", function(d, i) {return colors.slice().reverse()[i];});
+
+			legend.append("text")
+				.attr("x", w - 49)
+				.attr("y", 9)
+				.attr("dy", ".35em")
+				.style("text-anchor", "start")
+				.attr("font-size", "10px")
+				.attr("font-family", "Arial")
+				.text(function(d, i) { 
+				switch (i) {
+					case 0: return "With Health Care";
+					case 1: return "No Health Care";
+				}
+			});
+
+		// sub-title
+
+
+			// Prep the tooltip bits, initial display is hidden
+			var tooltip = svg.append("g")
+				.attr("class", "tooltip")
+				.style("display", "none");
+			    
+			tooltip.append("text")
+				.attr("x", 15)
+				.attr("dy", "1.2em")
+				.style("text-anchor", "middle")
+				.attr("font-size", "10px")
+				.attr("font-family", "Arial");
+
+			// Create x-axis
+			svg.append("line")
+				.attr("x1", 30)
+				.attr("y1", 350)
+				.attr("x2", 330)
+				.attr("y2", 350)
+				.attr("stroke-width", 1)
+				.attr("stroke", "grey");
+
+			// title
+			svg.append("text")
+				.attr("class", "title")
+				.attr("text-anchor", "middle")
+				.text("Healthcare Coverage by County in MA, 2014")
+				.attr("transform", "translate(180, 10)")
+				.attr("font-size", "18px")
+				.attr("font-family", "'Arial', bold");
+
+			// sub-title
+			svg.append("text")
+				.attr("class", "sub-title")
+				.attr("text-anchor", "middle")
+				.text("Percentage of Population with or without Healthcare")
+				.attr("transform", "translate(180, 25)")
+				.attr("font-size", "12px")
+				.attr("fill", "grey")
+				.attr("font-family", "Arial");
+
+			var per = [ 0, 20, 40, 60, 80, 100];
+
+			svg.append("gr")
+				.data(per)
+				.enter()
+				.append('line')
+				.attr("class", "line")
+				.attr("x1", 30)
+				.attr("y1", 350)
+				.attr("x2", 330)
+				.attr("y2", 350)
+				.attr("stroke-width", 1)
+				.attr("stroke", "grey");
+
+			svg.append("text")
+				.attr("class", "source")
+				.attr("text-anchor", "middle")
+				.text("American Community Survey, 2014")
+				.attr("transform", "translate(180, 40)")
+				.attr("font-size", "12px")
+				.attr("fill", "grey")
+				.attr("font-family", "Arial");
+
+			};		
+					
+	</script>
+
+</body>
+</html>
