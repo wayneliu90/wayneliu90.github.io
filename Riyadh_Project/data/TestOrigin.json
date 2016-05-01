@@ -1,0 +1,63 @@
+{
+"nodes":
+[
+  {
+    "TAZ_id": 0,
+    "ImmPer": 0
+  },
+  {
+    "TAZ_id": 1,
+    "ImmPer": 0.43
+  },
+  {
+    "TAZ_id": 2,
+    "ImmPer": 0.266268
+  },
+  {
+    "TAZ_id": 3,
+    "ImmPer": 0.746268
+  },
+  {
+    "TAZ_id": 4,
+    "ImmPer": 0.616268
+  }  
+],
+"links":
+[
+  {
+    "source":0,
+    "target":1,
+    "value":2.92
+  },
+  {
+    "source":0,
+    "target":3,
+    "value":1.92
+  },
+  {
+    "source":1,
+    "target":3,
+    "value":6.92
+  },
+  {
+    "source":2,
+    "target":0,
+    "value":8.92
+  },
+  {
+    "source":2,
+    "target":3,
+    "value":1.92
+  },
+  {
+    "source":3,
+    "target":3,
+    "value":0
+  },
+  {
+    "source":4,
+    "target":1,
+    "value":2.92
+  }
+]
+}
