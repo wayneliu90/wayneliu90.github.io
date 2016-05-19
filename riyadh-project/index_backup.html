@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Riyadh-Project-Test</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+	<link href="css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+    <!-- JavaScripts -->
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://duspviz.mit.edu/_assets/data/riyadh_traffic_voc.json"></script>
+    <script src="//d3js.org/queue.v1.min.js"></script>
+    <script src="//d3js.org/topojson.v1.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Page Content -->
+    <div class="container">
+
+
+
+        <hr>    
+        <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-5">
+                <div id="taz_map"></div>
+            </div>
+            <div class="col-md-7 text-center">
+                <div id="arc_diagram"></div>
+				<div class="btn-group">
+				  <button type="button" onclick="myFunction()" class="btn btn-default btn-xs">morning</button>
+				  <button type="button" class="btn btn-default btn-xs">afternoon</button>    
+				  <button type="button" class="btn btn-default btn-xs">evening</button>
+				  <button type="button" class="btn btn-default btn-xs">late night</button>
+				</div>
+            </p>
+            </div>
+        </div>
+
+        <!-- /.row -->
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; Wayne Liu & Sergio Galaz Garcia 2016</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+    </div>
+    <!-- /.container -->
+    <script>
+    	var S_TAZ_id = 100;
+        var width = 320;
+        var height = 320;
+        var pad = 20;
+
+        var color = d3.scale.threshold()
+            .domain([0.05, 0.1, 0.15, 0.2, 0.25])
+            .range(["#dae7f1", "#a3c2db", "#6c9dc6", "#4682b4", "#325d81", "#1d3549"]);
+
+        var albersProjection = d3.geo.albers()
+            .scale( 25000 )
+            .rotate( [-46.670616,0] )
+            .center( [0, 24.716042] )
+            .translate( [width/2,height/2] );
+
+        var geoPath = d3.geo.path()
+            .projection( albersProjection );
+
+        var svg = d3.select("#taz_map")
+            .append( "svg" )
+            .attr( "width", width )
+            .attr( "height", height )
+            .attr("transform", "translate(" + pad + ", " + pad + ")");
+
+        function myFunction(){
+        	console.log("clicked");
+        }
+
+        queue()
+            .defer(d3.json, "data/mikes_topo.json")
+            .defer(d3.csv, "data/mikes.csv")
+            .await(ready);
+
+        function ready(error, riyadh, migrant) {
+        if (error) throw error;
+
+        //console.log("data loaded");
+
+        var rateById = {};
+
+            migrant.forEach(function(d) { 
+                rateById[d.id] = +d.sergios_data_Perc_Cont;
+            });
+
+
+        //svg.append creates a "layer". It adds to the document objet model (MOD)
+        //.selectAll creates a "layer". Its selectivg everything. Its not creating until until we tell them to do so.
+
+            svg.append("g")
+                .attr("class", "states")
+                .selectAll("path")
+                .data(topojson.feature(riyadh, riyadh.objects.collection).features)
+                .enter()
+                .append("path")
+                .attr("d", geoPath)
+                .attr("stroke-width", 5)
+                .style("fill", function(d) { 
+                    //console.log(d);
+                    //console.log(d.properties.sergios_data_Perc_Cont);
+                    return color(d.properties.sergios_data_Perc_Cont);
+                })
+                .on('click', function(d, i) {
+                 S_TAZ_id = d.properties.TAZ ; 
+                 console.log(S_TAZ_id);
+                 d3.json("data/ActualDataNewNew.json", Update);
+                 } );
+                //console.log(S_TAZ_id)
+                ;
+
+            // svg.append("path")
+            //    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a.id !== b.id; }))
+            //    .attr("class", "states")
+            //    .attr("d", path);
+        }
+
+    </script>
+
+    <script>
+/* GLOBALS */
+
+var width  = 600;           // width of svg image
+var height = 600;           // height of svg image
+var margin = 20;            // amount of margin around plot area
+var pad = margin / 2;       // actual padding amount
+var radius = 5;             // fixed node radius
+var yfixed = height / 2;  // y position for all node
+var border = 1;
+var bordercolor = 'black';
+var S_index = 0;
+var maxc = 3000;
+
+/* HELPER FUNCTIONS */
+
+// Generates a tooltip for a SVG circle element based on its ID
+function addTooltip(circle) {
+    var x = parseFloat(circle.attr("cx"));
+    var y = parseFloat(circle.attr("cy"));
+    var r = parseFloat(circle.attr("r"));
+    var mc1 = circle.attr("TAZ_ID");
+    var mc2 = circle.attr("ImmPer");
+
+    var tooltip = d3.select("#plot")
+        .append("text")
+        .text("TAZ_id: " + mc1 + "; Imm_Per: " + (mc2 * 100).toFixed(2) + "%")
+        .attr("x", x)
+        .attr("y", y)
+        .attr("dy", -r * 2)
+        .attr("id", "tooltip");
+
+    var offset = tooltip.node().getBBox().width / 2;
+
+    if ((x - offset) < 0) {
+        tooltip.attr("text-anchor", "start");
+        tooltip.attr("dx", -r);
+    }
+    else if ((x + offset) > (width - margin)) {
+        tooltip.attr("text-anchor", "end");
+        tooltip.attr("dx", r);
+    }
+    else {
+        tooltip.attr("text-anchor", "middle");
+        tooltip.attr("dx", 0);
+    }
+}
+
+/* MAIN DRAW METHOD */
+
+function Update(graph) {
+    // create svg image
+
+    d3.selectAll("#arclinks")
+    	.remove();
+
+    // fix graph links to map to objects instead of indices
+    graph.links.forEach(function(d, i) {
+        d.forEach(function(d,i) {
+        d.source = isNaN(d.source) ? d.source : graph.nodes[d.source];
+        d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
+        })
+    });
+
+    // must be done AFTER links are fixed
+    linearLayout(graph.nodes);
+
+	    // draw nodes last
+	drawNodes(graph.nodes);
+
+    var color = d3.scale.linear()
+        .domain([40, maxc])
+        .range(["#ffcc99", "darkred"])
+        .interpolate(d3.interpolateLab);   
+
+    console.log(graph.nodes[S_index]);
+    
+    setTimeout(function(){     drawLinks(graph.links) }, 1500);
+
+	d3.selectAll("#cc")
+        .attr("TAZ_ID", graph.nodes[S_index].TAZ_id)
+        .attr("ImmPer", graph.nodes[S_index].ImmPer)
+        .style("stroke-width", 1)
+        .style("opacity", 1)
+        .on("mouseover", function(d, i) { addTooltip(d3.select(this)); })
+        .on("mouseout", function(d, i) { d3.select("#tooltip").remove(); })
+        .transition()
+        .duration(1500)
+        .attr("cx", graph.nodes[S_index].x)
+        .attr("cy", graph.nodes[S_index].y)
+        .style("fill", function(d, i) { var p = graph.nodes[S_index].Metro_dist;
+            if (p > maxc) { p = maxc }; return color(p)});
+
+    d3.selectAll("#text_per")
+    	.remove();
+
+    setTimeout(function(){         
+    	d3.selectAll("#plot")
+    	.append("text")
+    	.attr("id", "text_per")
+   		.text((graph.nodes[S_index].ImmPer * 100).toFixed(1) + "%")
+    	.attr("x", graph.nodes[S_index].x)
+    	.attr("y", (graph.nodes[S_index].y + radius + 8))
+    	.style("font-size", 7)
+    	.style("fill", "grey")
+    	.style("opacity", 1)
+    	.style("text-anchor", "middle")
+    	.style("font", "Arial");  }, 1500);
+
+    d3.selection.prototype.moveToFront = function() {  
+      return this.each(function(){
+        this.parentNode.appendChild(this);
+      });
+    };
+
+
+
+}
+
+// Draws an arc diagram for the provided undirected graph
+function arcDiagram(graph) {
+    // create svg image
+
+    var svg2 = d3.select("#arc_diagram")
+        .append("svg")
+        .attr("id", "arc")
+        .attr("width", width)
+        .attr("height", height)
+        //.style("stroke", bordercolor)
+        //.style("fill", "none")
+        //.style("stroke-width", 1);
+
+    // create plot area within svg image
+    var plot = svg2.append("g")
+        .attr("id", "plot")
+        .attr("transform", "translate(" + pad + ", " + pad + ")");
+
+    var line = svg2.append("line")
+ 		.attr("x1", 0)
+ 		.attr("x2", width)
+ 		.attr("y1", yfixed)
+ 		.attr("y2", yfixed)
+ 		.style("opacity", .1)
+ 		.style("stroke", "black")
+        .attr("transform", "translate(" + pad + ", " + pad + ")");
+
+    var text1 = svg2.append("text")
+    	.text("Out")
+    	.attr("x", pad)
+    	.attr('y', (yfixed + 7))
+    	.style('font-size', 7)
+    	.style("fill", "grey")
+    	.style("opacity", .3)
+    	.style('font', "Arial");
+
+    var text2 = svg2.append("text")
+    	.text("In")
+    	.attr("x", pad)
+    	.attr('y', (yfixed + 18))
+    	.style('font-size', 7)
+    	.style("fill", "grey")
+    	.style("opacity", .3)
+    	.style('font', "Arial");    
+
+    var text3 = svg2.append("text")
+    	.text("Out")
+    	.attr("x", width)
+    	.attr('y', (yfixed + 7))
+    	.style('font-size', 7)
+    	.style("fill", "grey")
+    	.style("opacity", .3)
+    	.style('text-anchor', "end")
+    	.style('font', "Arial");
+
+    var text4 = svg2.append("text")
+    	.text("In")
+    	.attr("x", width)
+    	.attr('y', (yfixed + 18))
+    	.style('font-size', 7)
+    	.style("fill", "grey")
+    	.style("opacity", .3)
+    	.style('text-anchor', "end")
+    	.style('font', "Arial");  
+
+  //  console.log(graph);
+
+
+    // fix graph links to map to objects instead of indices
+    graph.links.forEach(function(d, i) {
+        d.forEach(function(d,i) {
+        d.source = isNaN(d.source) ? d.source : graph.nodes[d.source];
+        d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
+        })
+    });
+
+    // must be done AFTER links are fixed
+    linearLayout(graph.nodes);
+
+    // draw nodes last
+    drawNodes(graph.nodes);
+
+ //   console.log(graph.nodes[S_index]);
+    drawLinks(graph.links);
+    //setTimeout(function(){     drawLinks(graph.links) }, 1000);
+
+    var color = d3.scale.linear()
+        .domain([40, maxc])
+        .range(["#ffcc99", "darkred"])
+        .interpolate(d3.interpolateLab);    
+
+    var circle = plot.append("circle")
+        .attr("id", "cc")
+        .attr("TAZ_ID", graph.nodes[S_index].TAZ_id)
+        .attr("ImmPer", graph.nodes[S_index].ImmPer)
+        .attr("cx", graph.nodes[S_index].x)
+        .attr("cy", graph.nodes[S_index].y)
+        .attr("r", radius)
+        .style("fill", function(d, i) { var p = graph.nodes[S_index].Metro_dist;
+            if (p > maxc) { p = maxc }; return color(p)})
+        .style("stroke-width", 1)
+        .style("opacity", 1)
+        .on("mouseover", function(d, i) { addTooltip(d3.select(this)); })
+        .on("mouseout", function(d, i) { d3.select("#tooltip").remove(); });
+
+    console.log(circle);
+
+   	var text5 = plot.append("text")
+   		.attr("id", "text_per")
+   		.text((graph.nodes[S_index].ImmPer * 100).toFixed(1) + "%")
+    	.attr("x", graph.nodes[S_index].x)
+    	.attr("y", (graph.nodes[S_index].y + radius + 8))
+    	.style("font-size", 7)
+    	.style("fill", "grey")
+    	.style("opacity", 1)
+    	.style("text-anchor", "middle")
+    	.style("font", "Arial")
+
+}
+
+// Layout nodes linearly, sorted by ImmPer
+function linearLayout(nodes) {
+    // sort nodes by ImmPer
+    nodes.sort(function(a, b) {
+        return b.ImmPer - a.ImmPer;
+    })
+
+    // used to scale node index to x position
+    var xscale = d3.scale.linear()
+        .domain([0, nodes.length - 1])
+        .range([radius, width - margin - radius]);
+
+    // calculate pixel location for each node
+    nodes.forEach(function(d, i) {
+        d.x = xscale(i);
+        d.y = yfixed;
+    });
+}
+
+// Draws nodes on plot
+function drawNodes(nodes) {
+    // used to assign nodes color by ImmPer
+
+    // console.log(nodes)
+
+    d3.select("#plot").selectAll(".node")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr("class", "node")
+        .attr("id", function(d, i) { if (d.TAZ_id == S_TAZ_id) { S_index = i; return d.TAZ_id;}})
+        .remove();
+
+    //console.log(S_index);
+
+}
+
+// Draws nice arcs for each link on plot
+function drawLinks(links) {
+
+    // path generator for arcs (uses polar coordinates)
+    var arclink = d3.svg.arc()
+
+    d3.selection.prototype.moveToBack = function() {  
+        return this.each(function() { 
+            var firstChild = this.parentNode.firstChild; 
+            if (firstChild) { 
+                this.parentNode.insertBefore(this, firstChild); 
+            } 
+        });
+    };
+
+    d3.selectAll("#arclinks")
+    	.moveToBack();
+    // add links
+    d3.select("#plot").selectAll(".link")
+        .data(links[S_TAZ_id])
+        .enter()
+        .append("path")
+        .attr("class", "arc")
+        .attr("id", "arclinks")
+        .attr("transform", function(d, i) { //console.log(d);
+            // arc will always be drawn around (0, 0)
+            // shift so (0, 0) will be between source and target
+            var xshift = d.source.x + (d.target.x - d.source.x) / 2;
+            var yshift = yfixed;
+            return "translate(" + xshift + ", " + yshift + ")";
+        })
+        .attr("d", function(d, i) { //console.log(d);
+            if ((d.target.TAZ_id == S_TAZ_id) || (d.source.TAZ_id == S_TAZ_id)) {
+            // get x distance between source and target
+            var xdist = Math.abs(d.source.x - d.target.x);
+            var hd = d.value / 6;
+            // set arc radius based on x distance
+            arclink.innerRadius(xdist / 2 - hd);
+            arclink.outerRadius(xdist / 2 + hd);
+
+            // if the link is going in, the arc will be above
+            if (d.target.TAZ_id == S_TAZ_id) {
+            arclink.startAngle(-Math.PI / 2);
+            arclink.endAngle(Math.PI / 2); }
+
+            // if the link is going out, the arc will be below
+            if (d.source.TAZ_id == S_TAZ_id) {
+            arclink.startAngle(Math.PI / 2);
+            arclink.endAngle(3 * Math.PI / 2); }
+
+            // want to generate 1/3 as many points per pixel in x direction
+            var points = d3.range(0, Math.ceil(xdist / 3));
+
+            // set radian scale domain
+            // radians.domain([0, points.length - 1]);
+
+            // return path for arc
+            return arclink(points);
+            }
+        })
+        .attr('fill', 'white')
+        .attr('opacity', .3)
+        .moveToBack()
+        .transition()
+    	.duration(1500)
+        .attr('fill', 'steelblue')
+
+}
+
+d3.json("data/ActualDataNewNew.json", arcDiagram);
+</script>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
