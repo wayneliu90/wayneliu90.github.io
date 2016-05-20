@@ -60,7 +60,33 @@
     .brush {
         fill-opacity: 0;
         stroke: black;
-    }</style>
+    }
+	  .lines {
+        fill:none;
+        stroke: orange;
+        stroke-width: 1.5;
+    }
+    g.tick text{
+        font-size: 8px;
+    }
+    a {
+    	color: orange;
+      font: Helvetica;
+      font-size: 11px;
+    }
+    b {
+      font-weight: bold;
+      font: Helvetica;
+    }
+    p {
+      font: Helvetica;
+      font-size: 11px;
+    }
+    i {
+    font-style: italic;
+    } 
+    </style>
+
 
 </head>
 
@@ -127,7 +153,71 @@
         <h4 class="modal-title">About this project</h4>
       </div>
       <div class="modal-body">
-        <p>Explanation of the project - waiting to be filled in</p>
+        <b>About</b> 
+        <p></p>
+        <p>Current estimates suggest that a third of Riyadh’s inhabitants are migrants. The bulk of this population consists of an array of distinctive communities whose origins are located not only in neighboring Arab countries, but in from regions as far away from Saudi Arabia as the Pacific Rim and South Asia. Consistent with trends observed in other large urban agglomerations, the residential location of this sizeable migrant population is spatially segregated. Migrants make up a bigger share of neighbor-level populations in the city’s central area. In the city´s periphery, especially in the west and the east, migrant inhabitants are relatively less scarce.</p> 
+
+<p>In Riyadh, to this conventional residential segregation it should also be added a peculiar heterogeneity in the way migrants insert themselves in Riyadh’s economy. Most of Riyadh’s inhabitants work in the private enterprises, and make up 90% of the total workforce of the country’s private sector. </p>
+
+<p>Due to these demographic, residential and labor characteristics, visualizing the way Riyadh’s migrant population relates to the city’s overall transportation workflows is significant for a number of reasons: </p>
+
+<p>First, it serves as a vehicle to map the mobility experience of a significant part of Riyadh´s population. How do the approximately 2 million migrants living in the city move through Riyadh’s urban tissue?</p>
+
+<p>Second, it provides valuable information to understand the potential changes in mobility patterns that would ensue from an increasing amount of Saudis changing their labor sites from public to private.  As current public programs aspire to bring and increasing share of the Saudi population to the private sector, understanding the way in which migrant, private-sector working population works might be instrumental to provide some insights to the changes in transportation flows we might expect from this economic reconversion. </p>
+
+<p>Third, it allows to understand in migratory terms the type of users that will be more prone to take the projected Riyadh subway, therefore allowing to have a better of understanding of its potential user demography. </p>
+
+<p>Finally, it allows us to have with a quick way to analyze sociability patterns across Riyadh.  How frequent are transportation flows between migrant and non-migrant zones?  Are Riyadh’s neighborhoods primordially  “enclaves” that receive and send people to zones with a similar proportion of migrant population, or rather, do they function as “hinges” that commonly unite two heterogeneous zones in terms of their population density?  </p>
+
+<p>All in all, these features provide a solid substantive basis to conduct an exploration of the way migration status bears upon the general traffic patterns of the Saudi capital. </p>
+
+<p></p>
+<b>METHODS</b>
+<p></p>
+<i>Data</i>
+<p></p>
+<p>An ideal data structure to visualize the way in which migration affects transportation in Riyadh would be related to an individual-level panel data structure containing individual-level observations regarding origin and destination of trips without the Saudi capital. However, for logistic and data privacy reasons, this information was unavailable. Instead, we used Transportation Area Zone (TAZ) –level data. At this level of analysis, information was available regarding </p>
+
+<p>(1) The area and location of the TAZ within Riyadh –available through a shape file; </p>
+<p>(2) Basic demographic information of each –available through a database containing basic socio-demographic information obtained from the Saudi census, and </p>
+<p>(3) Information regarding transportation patterns between TAZ, which were codified in several origin/destination databases built out of cell  phone data. </p>
+
+
+<i>Outputs</i>
+<p></p>
+<p>The project featured three main outputs: </p>
+
+<i>A. Choropleth Map</i>
+<p></p>
+<p>Using the database on demographic characteristics of Riyadh’s TAZ’s, the first output sought to visualize differences across TAZ’s in terms of the proportion of migrant population each one had through cartographic means.  This element included the following components:</p>
+
+<p>A zoomable, TAZ-level map of Riyadh that colors each TAZ according to their migrant population; </p>
+<p>A visualization of the projected course of the Riyadh subway system;</p>
+<p>a brushing tool that allowed the user to make the map color only those TAZ’s whose proportion of migrant population fell under a specific interest range.</p>
+<img src="data/image2.jpg" id="theImgId"/>
+<p></p>
+<i>B. Arc Diagram</i>
+<p></p>
+<p>The second output of the project sought to represent in a succinct, clear and readable way the transportation flows occurring to and from each of Riyadh’s TAZ’s.  For this task, the project used the origin/destination matrix across TAZ to generate, for each TAZ, an arc diagram that would make visible the transportation flows originating from/culminating to each specific TAZ.  By virtue of being a graphical device that relates elements arrayed along a one dimensional axis, an arc diagram was an ideal visualization strategy for the purposes of the project, as it allowed to map relationships between TAZ’s while still providing an orderly presentation according to the percentage of migrant population each had.</p>  
+
+<p>The arc diagram was composed by the following elements:</p>
+
+<p>A sorting axis that ordered TAZ’s according to the proportion of their migrant population</p>
+<p>A TAZ mark that indicated the specific TAZ whose transportation flows were visualized. This mark was positioned in the sorting axis according to the proportion of migrant population of the TAZ. Its color is related to its proximity to subway stations, with lighter colors indicating closer distance to the subway station. </p>
+<p>A series of arcs that visualized transportation flows related to the Target TAZ. Arcs occurring in the upper half of the diagram represented outward flows; arcs represented in the bottom half of the diagram was related to inward flows. The thickness of the arcs represented the volume of transportation between the target TAZ and all other TAZ’s. </p> 
+<p>A series of buttons that allowed the user to visualize data according to four times during the day: morning, afternoon, evening, and late night.</p> 
+<img src="data/image2-2.jpg" id="theImgId2"/>
+<p></p>
+<i>C. Interphasing between the Map and the Diagram. </i>
+<p></p>
+<p>Finally, a third output consisted in interphasing the map and the arc diagram, allowing the user to select in the map a specific TAZ and generating its corresponding arc diagram.</p>
+<p></p>
+<p></p>
+<b>TEAM</b>
+<p></p>
+<p>Sergio Galaz Garcia is an M.Arch candidate at MIT and a doctor in sociology candidate at Princeton University. His interests lie in the analysis and design exploration of the relationships between power, space and the everyday life in contemporary urban experienes. </p>
+<p>Wayne Liu is currently in M.Arch ADV program at MIT. He is interested in how design and policy can together influence built environment. He also holds a BS in Architecture from Washington University in St. Louis.</p>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -137,6 +227,13 @@
   </div>
 </div>
     <script>
+        var theImg = document.getElementById('theImgId');
+          theImg.height = 459;
+          theImg.width = 550;
+
+        var theImg = document.getElementById('theImgId2');
+          theImg.height = 426;
+          theImg.width = 550;
 
         function updateMorning(){
             console.log("clicked - Morning");
@@ -209,6 +306,7 @@
         queue()
         .defer(d3.json, "data/mikes_topo.json")
         .defer(d3.csv, "data/mikes.csv")
+        .defer(d3.json, "data/lines.json")
         .await(ready);
 
 
@@ -222,7 +320,7 @@
             .attr("d", geoPath);
             }
        
-       function ready(error, riyadh, migrant) 
+		function ready(error, riyadh, migrant, riyadh_topo)  
            {
            if (error) throw error; 
           
@@ -315,19 +413,27 @@
                return
             })
             
-          g.selectAll("path")
+           console.log("number_of_obs",number_of_obs)
+           map = g.selectAll(".mappath")
            .data(topojson.feature(riyadh, riyadh.objects.collection).features)
-           .enter()
+          
+          map_enter = map.enter()
            .append("path")
-           .attr('class', 'mappath')
            .attr("d", geoPath)
-           .attr("stroke-width", 5)
+           .attr('class', 'mappath')
+           map.attr("stroke-width", 5)
            .style("fill", function(d) { 
            return color(d.properties.sergios_data_Perc_Cont);
            })
-            .on('click', function(d) {
-                 S_TAZ_id = d.properties.TAZ ; 
-                 console.log(S_TAZ_id);
+
+           d3.selectAll(".mappath")
+ 	         .on('click', function(d) {
+                 S_TAZ_id = d.properties.TAZ ;
+                 // clear out everything
+                 d3.selectAll(".mappath").style("stroke", "none")
+                 // hightlight this one
+                 d3.select(this).style("stroke", "orange").style("stroke-width", "3px")
+                 console.log("id",S_TAZ_id);
                  if (timep == 1) {
                  d3.json("data/Morning/Morning_" + S_TAZ_id.toString() + ".json", UpdateArc);}
                  if (timep == 2) {
@@ -336,9 +442,16 @@
                  d3.json("data/Evening/Evening_" + S_TAZ_id.toString() + ".json", UpdateArc);}
                  if (timep == 4) {
                  d3.json("data/LateNight/LateNight_" + S_TAZ_id.toString() + ".json", UpdateArc);}
-            })
-           ;
+            });
 
+
+        // map;  
+        /////////////////
+        /// METRO LINE //
+        /////////////////
+        console.log(riyadh_topo)
+         
+        g.selectAll(".lines").data(riyadh_topo.features).enter().append("path").attr("class", "lines").attr("d", geoPath)
 
     var data = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7 ,0.8, 0.9, 1.0]
     
@@ -366,12 +479,16 @@
         .startAngle(0)
         .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
 
-    var svg = d3.select("#taz_brush")
+  var svg = d3.select("#taz_brush")
         .append( "svg" )
         .attr('z-index', 200)
         .attr('top', 400)
-        .attr( "width", width )
-        .attr( "height", 100 ).append("g");
+        //.attr('position', 'absolute')
+        .attr( "width", 350 )
+        .attr( "height", 100 )
+        .style("padding-left", 10)
+        .append("g");
+        console.log(data)
      
      var circle = svg.append("g")
      .attr("transform", "translate(0," + 3 * height + ")")
@@ -394,11 +511,28 @@
         })
         .style("fill-opacity", 0.2); 
 
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .tickFormat(function(d){
+            return d*100 + "%";
+        })
+        .orient("bottom");
+
+
     svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + 4 *height + ")")
-        .call(d3.svg.axis().scale(x).orient("bottom"))
+        .call(xAxis)
         .style("fill", "Grey");
+
+    var textL = svg.append("text")
+      .text("Migrant Population")
+      .attr("transform", "translate(" + width/2 + "," + 6.2 *height + ")")      
+      .style('font-size', 9)
+      .style("fill", "grey")
+      .style("opacity", .7)
+      .style('font', "Arial")
+      .style("text-anchor", "middle")
 
  
     var brushg = svg.append("g")
@@ -512,7 +646,11 @@ function addTooltip(circle) {
     }
 }
 
-/* MAIN DRAW METHOD */
+    var colorCC = d3.scale.linear()
+        .domain([150, maxc])
+        .range(["#ffcc99", "darkred"])
+        .interpolate(d3.interpolateLab); 
+
 
 function UpdateArc(graph) {
     // create svg image
@@ -532,10 +670,7 @@ function UpdateArc(graph) {
 	    // draw nodes last
 	drawNodes(graph.nodes);
 
-    var color = d3.scale.linear()
-        .domain([40, maxc])
-        .range(["#ffcc99", "darkred"])
-        .interpolate(d3.interpolateLab);   
+  
 
     //console.log(graph.nodes[S_index]);
     
@@ -553,7 +688,7 @@ function UpdateArc(graph) {
         .attr("cx", graph.nodes[S_index].x)
         .attr("cy", graph.nodes[S_index].y)
         .style("fill", function(d, i) { var p = graph.nodes[S_index].Metro_dist;
-            if (p > maxc) { p = maxc }; return color(p)});
+            if (p > maxc) { p = maxc }; return colorCC(p)});
 
     d3.selectAll("#text_per")
     	.remove();
